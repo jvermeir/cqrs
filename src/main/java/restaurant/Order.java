@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Order {
@@ -66,4 +67,10 @@ public class Order {
     public void setPaymentMethod(String paymentMethod) {
         set("paymentMethod", paymentMethod);
     }
+
+    public void setItems(List<MenuItem> items) {
+        set("lineItems", items.toArray());
+
+    }
+
 }
