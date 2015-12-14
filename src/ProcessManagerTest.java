@@ -89,10 +89,4 @@ public class ProcessManagerTest {
         assertEquals(1, countTriggerSellOccuredEvents());
     }
 
-//    @Test
-//    public void testTriggerPriceDoesNotIncreaseIfIntervalIsNotFinishedYet () {
-//        processManager.handlePriceTickOccured(new PriceTickOccured(2L, 200L));
-//        processManager.handleSendToSelfIn(new SendToSelfEvent(3L, 2L));
-//        assertEquals(0L, processManager.getTriggerPrice());
-//    }
 }
