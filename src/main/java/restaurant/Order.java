@@ -1,72 +1,69 @@
 package restaurant;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * User: mickdudley
- * Date: 14/12/2015
- */
 public class Order {
-    private JsonNode order;
-    ObjectMapper mapper;
+    protected final int tableNumber;
+    protected Map<String,Object> other = new HashMap<String,Object>();
 
-    public Order(String json) throws IOException {
-        mapper = new ObjectMapper();
-
-        order = mapper.readTree(json);
+    @JsonCreator
+    public Order(@JsonProperty("tableNumber") int tableNumber)
+    {
+        this.tableNumber = tableNumber;
     }
 
-    public Order(int tableNumber) {
-        mapper = new ObjectMapper();
+    public int getTableNumber() { return tableNumber; }
 
-        JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
+    public Object get(String name) {
+        return other.get(name);
+    }
 
-        order = nodeFactory.objectNode();
+    // "any getter" needed for serialization
+    @JsonAnyGetter
+    public Map<String,Object> any() {
+        return other;
+    }
 
-
-        this.setTableNumber(tableNumber);
-
+    @JsonAnySetter
+    public void set(String name, Object value) {
+        other.put(name, value);
     }
 
     public double getTotal() {
-        return order.at("/total").asDouble();
+        return (Double) this.get("total");
     }
 
     public void setCookTime(int cookTime) {
-        ((ObjectNode) order).put("timeToCook", cookTime);
+        set("timeToCook", cookTime);
     }
 
     public void setTableNumber(int tableNumber) {
-        ((ObjectNode) order).put("tableNumber", tableNumber);
+        set("tableNumber", tableNumber);
     }
 
     public void addSubTotal(double subTotal) {
-        ((ObjectNode) order).put("subTotal", subTotal);
+        set("subTotal", subTotal);
     }
 
     public void addTotal(double total) {
-        ((ObjectNode) order).put("total", total);
+        set("total", total);
     }
 
     public void addTax(double tax) {
-        ((ObjectNode) order).put("tax", tax);
+        set("tax", tax);
     }
 
     public void setPaid(boolean paid) {
-        ((ObjectNode) order).put("paid", paid);
+        set("paid", paid);
     }
 
     public void setPaymentMethod(String paymentMethod) {
-        ((ObjectNode) order).put("paymentMethod", paymentMethod);
-    }
-
-    public String print() throws JsonProcessingException {
-        return mapper.writeValueAsString(order);
+        set("paymentMethod", paymentMethod);
     }
 }

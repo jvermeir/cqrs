@@ -50,8 +50,8 @@ public class SerialiseTest {
 
     @Test
     public void canCreateOrder() throws IOException {
-        Order order = new Order(ORDER_JSON);
-        assertEquals(11.98, order.getTotal(), 0.1);
+        Order order = new Order(12);
+        assertEquals(12, order.getTableNumber());
     }
 
 

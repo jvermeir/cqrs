@@ -13,6 +13,6 @@ public class Restaurant {
         Cook cook = new Cook(asstManager);
         Waiter waiter = new Waiter(cook);
 
-        waiter.placeOrder(123, new String[] {"pizza", "coke"});
+        waiter.placeOrder(12, new String[] {"pizza", "coke"});
     }
 }
