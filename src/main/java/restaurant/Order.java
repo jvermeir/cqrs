@@ -39,12 +39,10 @@ public class Order {
     }
 
     public void setCookTime(int cookTime) {
-//        order.in
         ((ObjectNode) order).put("timeToCook", cookTime);
     }
 
     public void setTableNumber(int tableNumber) {
-//        order.in
         ((ObjectNode) order).put("tableNumber", tableNumber);
     }
 

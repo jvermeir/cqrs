@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -45,14 +46,11 @@ public class ProcessManagerTest {
         publisher.clear();
         processManager.handleRemoveFromSevenSecondQueue(priceTick);
         // then
-        Event theEvent= null;
-        for (Event event : publisher.getEvents()) {
-            if (event instanceof TriggerPriceChangedEvent) {
-                theEvent = event;
-                break;
-            }
-        }
-        Assert.assertEquals(209L, theEvent.getPrice());
+        Optional<Event> anEvent = publisher.getEvents().stream()
+                .filter((event1 -> event1 instanceof TriggerPriceChangedEvent))
+                .findFirst();
+
+        Assert.assertEquals(209L, anEvent.get().getPrice());
     }
 
     @Test
@@ -68,14 +66,10 @@ public class ProcessManagerTest {
         assertEquals(1, countTriggerSellOccuredEvents());
     }
 
-    private int countTriggerSellOccuredEvents() {
-        int count=0;
-        for (Event event : publisher.getEvents()) {
-            if (event instanceof TriggerSellOccuredEvent) {
-                count++;
-            }
-        }
-        return count;
+    private long countTriggerSellOccuredEvents() {
+        return publisher.getEvents().stream()
+                .filter((event1 -> event1 instanceof TriggerSellOccuredEvent))
+                .count();
     }
 
     @Test
