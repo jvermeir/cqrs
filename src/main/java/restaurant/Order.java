@@ -1,17 +1,15 @@
 package restaurant;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Order {
     protected final int tableNumber;
-    protected Map<String,Object> other = new HashMap<String,Object>();
+    protected Map<String,Object> other = new HashMap<>();
 
     @JsonCreator
     public Order(@JsonProperty("tableNumber") int tableNumber)
@@ -73,4 +71,12 @@ public class Order {
 
     }
 
+    @JsonIgnore
+    public Object[] getLineItems() {
+        return (Object[]) get("lineItems");
+    }
+
+    public void setIngredients(Set<String> ingredients) {
+        set("ingredients", ingredients);
+    }
 }
