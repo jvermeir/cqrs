@@ -1,4 +1,4 @@
-import java.math.BigDecimal;
+package example1;
 
 /**
  * Created by jan on 14/12/15.
@@ -25,6 +25,6 @@ public class AbstractEvent implements Event {
 
     @Override
     public String toString() {
-        return "Event [" +getTimestamp() + ", " + getPrice() + "]";
+        return "example1.Event [" +getTimestamp() + ", " + getPrice() + "]";
     }
 }

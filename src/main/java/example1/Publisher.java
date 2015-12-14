@@ -1,3 +1,5 @@
+package example1;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,6 @@ public class Publisher {
 
     public void publish(Event event) {
         events.add(event);
-        System.out.println("Publisher got event: " + event.getClass().getSimpleName() + " " + event);
+        System.out.println("example1.Publisher got event: " + event.getClass().getSimpleName() + " " + event);
     }
 }

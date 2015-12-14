@@ -1,3 +1,6 @@
+package example1;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,15 +24,15 @@ public class ProcessManagerTest {
 
     @Test
     public void testPositionAcquired() {
-        assertEquals(0, processManager.elevenSecondsList.size());
-        assertEquals(0, processManager.sevenSecondsList.size());
+        Assert.assertEquals(0, processManager.elevenSecondsList.size());
+        Assert.assertEquals(0, processManager.sevenSecondsList.size());
     }
 
     @Test
     public void testPriceIncreased() {
         processManager.handlePriceTickOccured(new PriceTickOccured(2L, 2L));
-        assertEquals(1, processManager.sevenSecondsList.size());
-        assertEquals(1, processManager.elevenSecondsList.size());
+        Assert.assertEquals(1, processManager.sevenSecondsList.size());
+        Assert.assertEquals(1, processManager.elevenSecondsList.size());
     }
 
     @Test
@@ -49,7 +52,7 @@ public class ProcessManagerTest {
                 break;
             }
         }
-        assertEquals(209L, theEvent.getPrice());
+        Assert.assertEquals(209L, theEvent.getPrice());
     }
 
     @Test

@@ -1,4 +1,4 @@
-import java.math.BigDecimal;
+package example1;
 
 /**
  * Created by jan on 14/12/15.
