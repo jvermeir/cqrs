@@ -11,7 +11,7 @@ public class PrintingHandler implements HandleOrder{
     public void handle(Order order) {
         System.out.println(getClass().getSimpleName() + " handle");
         try {
-            System.out.println(mapper.writeValueAsString(order));
+            System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(order));
         } catch (JsonProcessingException e) {
             //
         }

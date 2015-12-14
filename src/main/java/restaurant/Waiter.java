@@ -8,10 +8,11 @@ import java.util.List;
 public class Waiter {
     private HandleOrder handler;
     ImmutableMap<String, MenuItem> menu = ImmutableMap.<String, MenuItem>builder()
-        .put("pizza", new MenuItem("pizza", 10.0))
-        .put("cake", new MenuItem("cake", 9.0))
-        .put("coke", new MenuItem("coke", 2.0))
-        .build();
+            .put("pizza", new MenuItem("pizza", 10.0))
+            .put("cake", new MenuItem("cake", 9.0))
+            .put("razor blade pizza", new MenuItem("razor blade pizza", 9.99))
+            .put("coke", new MenuItem("coke", 2.0))
+            .build();
 
     public Waiter(HandleOrder handler) {
         this.handler = handler;

@@ -13,6 +13,7 @@ public class Cook implements HandleOrder{
             .put("pizza", new Recipe("pizza", new String[] {"flour", "salt", "yeast", "water", "tomato sauce"}))
             .put("cake", new Recipe("cake", new String[] {"flour", "egg", "sugar", "chocolate"}))
             .put("coke", new Recipe("coke", new String[] {"sugar", "water"}))
+            .put("razor blade pizza", new Recipe("razor blade pizza", new String[] {"foo", "bar", "baz"}))
             .build();
 
     public Cook (HandleOrder handler) {

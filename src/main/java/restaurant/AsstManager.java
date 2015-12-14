@@ -15,9 +15,9 @@ public class AsstManager implements HandleOrder {
     @Override
     public void handle(Order order) {
         System.out.println(getClass().getSimpleName() + " handle");
-        order.addSubTotal(1.23);
-        order.addTotal(1.99);
-        order.addTax(0.15);
+        order.addSubTotal(9.99);
+        order.addTotal(11.98);
+        order.addTax(1.99);
         handler.handle(order);
 
     }
