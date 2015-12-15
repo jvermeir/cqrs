@@ -1,7 +1,6 @@
 package restaurant;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +21,7 @@ public class RestaurantTest {
         orderCaptureHandler = new OrderCaptureHandler(printingHandler);
         cashier = new Cashier(orderCaptureHandler);
         asstManager = new AsstManager(cashier);
-        cook = new Cook(asstManager);
+        cook = new Cook(asstManager, "name");
         waiter = new Waiter(cook);
     }
 
@@ -34,6 +33,44 @@ public class RestaurantTest {
         Order order = orderCaptureHandler.getOrder();
         // then
         assertEquals(12, order.getTableNumber());
+    }
+
+    @Test
+    public void testMultiPlexer() {
+        // given
+        ImmutableList<HandleOrder> handleOrders = ImmutableList.<HandleOrder>builder()
+                .add(new Cook(asstManager, "cook1"))
+                .add(new Cook(asstManager, "cook2"))
+                .add(new Cook(asstManager, "cook3"))
+                .build();
+        MultiPlexer multiPlexer = new MultiPlexer(handleOrders);
+        Waiter waiter = new Waiter(multiPlexer);
+        // when
+        waiter.placeOrder(12, new String[]{"razor blade pizza"});
+        Order order = orderCaptureHandler.getOrder();
+        // then
+        assertEquals(12, order.getTableNumber());
+    }
+
+    @Test
+    public void testRoundRobinDispatcher() {
+        // given
+        ImmutableList<HandleOrder> handleOrders = ImmutableList.<HandleOrder>builder()
+                .add(new Cook(asstManager, "cook1"))
+                .add(new Cook(asstManager, "cook2"))
+                .add(new Cook(asstManager, "cook3"))
+                .build();
+        RoundRobinDispatcher roundRobinDispatcher = new RoundRobinDispatcher(handleOrders);
+        Waiter waiter = new Waiter(roundRobinDispatcher);
+        // when
+        waiter.placeOrder(12, new String[]{"razor blade pizza"});
+        waiter.placeOrder(12, new String[]{"pizza"});
+        waiter.placeOrder(12, new String[]{"coke"});
+        waiter.placeOrder(12, new String[]{"cake"});
+        Order order = orderCaptureHandler.getOrder();
+        // then
+        assertEquals(12, order.getTableNumber());
+        assertEquals(4, cashier.getPaidOrders().size());
     }
 
     public static class OrderCaptureHandler implements HandleOrder{

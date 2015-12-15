@@ -15,17 +15,27 @@ public class Cook implements HandleOrder{
             .put("coke", new Recipe("coke", new String[] {"sugar", "water"}))
             .put("razor blade pizza", new Recipe("razor blade pizza", new String[] {"foo", "bar", "baz"}))
             .build();
+    private String name;
 
-    public Cook (HandleOrder handler) {
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Cook (HandleOrder handler, String name) {
         this.handler = handler;
+        this.name = name;
     }
 
 
     @Override
     public void handle(Order order) {
-        System.out.println(getClass().getSimpleName() + " handle");
+        System.out.println(getClass().getSimpleName() + " handle, cook: " + name);
         try {
-            Thread.sleep(500);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             throw new RuntimeException("Help");
         }

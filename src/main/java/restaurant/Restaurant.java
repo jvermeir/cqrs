@@ -10,7 +10,7 @@ public class Restaurant {
         PrintingHandler printingHandler = new PrintingHandler();
         Cashier cashier = new Cashier(printingHandler);
         AsstManager asstManager = new AsstManager(cashier);
-        Cook cook = new Cook(asstManager);
+        Cook cook = new Cook(asstManager, "Cook 1");
         Waiter waiter = new Waiter(cook);
 
         waiter.placeOrder(12, new String[] {"razor blade pizza"});
