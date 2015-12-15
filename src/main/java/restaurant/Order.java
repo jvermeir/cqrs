@@ -11,10 +11,17 @@ public class Order {
     protected final int tableNumber;
     protected Map<String,Object> other = new HashMap<>();
 
+     private long timestamp;
+
     @JsonCreator
     public Order(@JsonProperty("tableNumber") int tableNumber)
     {
         this.tableNumber = tableNumber;
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 
     public int getTableNumber() { return tableNumber; }

@@ -161,14 +161,68 @@ public class RestaurantTest {
         assertEquals(maxOrders, cashier.getPaidOrders().size());
     }
 
+
+    @Test
+    public void testMoreFairDispatcherWithOrderDropper() throws  Exception{
+        // given
+
+//        printingHandler = new PrintingHandler();
+//        cashier = new Cashier(orderCaptureHandler);
+//        asstManager = new AsstManager(cashier);
+//        cook = new Cook(asstManager, "name");
+//        waiter = new Waiter(cook);
+
+        cashier = new Cashier(printingHandler);
+        ThreadedHandler cashierHandler = new ThreadedHandler(cashier, "cashier1");
+        ThreadedHandler asstManagerHandler = new ThreadedHandler(new AsstManager(cashierHandler), "assistant manager");
+
+        ImmutableList<ThreadedHandler> cookHandlers = ImmutableList.<ThreadedHandler>builder()
+                .add(new ThreadedHandler(new TTLHandler(new Cook(asstManagerHandler, "cook1")), "cook1queue"))
+                .add(new ThreadedHandler(new TTLHandler(new Cook(asstManagerHandler, "cook2")), "cook2queue"))
+                .add(new ThreadedHandler(new TTLHandler(new Cook(asstManagerHandler, "cook3")), "cook3queue"))
+                .build();
+
+        List<Startable> startables = new ArrayList<>();
+        startables.addAll(cookHandlers);
+        startables.add(cashierHandler);
+        startables.add(asstManagerHandler);
+
+        MoreFairDispatcher moreFairDispatcher = new MoreFairDispatcher(cookHandlers);
+        for (Startable startable:startables) {
+            startable.start();
+        }
+        ThreadedHandler cookDispatcher = new ThreadedHandler(moreFairDispatcher, "Fair cook dispatcher");
+        Waiter waiter = new Waiter(cookDispatcher);
+        cookDispatcher.start();
+        // when
+
+        int maxOrders = 100;
+        addRandomOrders(waiter, maxOrders);
+
+        // then
+        waitForStuffToFinish(cookHandlers, cookDispatcher, maxOrders);
+        System.out.println("Processed " + cashier.getPaidOrders().size() + " orders");
+
+//        assertEquals(maxOrders, cashier.getPaidOrders().size());
+    }
+
+
+
+
+
+
     private void waitForStuffToFinish(ImmutableList<ThreadedHandler> handleOrders, ThreadedHandler cookDispatcher, int maxOrders) throws InterruptedException {
-        while (cashier.getPaidOrders().size()!=maxOrders) {
+        int counts = 1;
+        while (counts > 0) {
+            Thread.sleep(500);
+            counts = 0;
             for(HandleOrder handleOrder: handleOrders) {
                 Startable startable = (Startable) handleOrder;
                 System.out.println(startable.getName() + ": " + startable.getQueueCount());
+                counts += startable.getQueueCount();
             }
             System.out.println(cookDispatcher.getName() + ": " + cookDispatcher.getQueueCount());
-            Thread.sleep(500);
+            counts += cookDispatcher.getQueueCount();
         }
     }
 
