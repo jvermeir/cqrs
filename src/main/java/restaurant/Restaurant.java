@@ -14,5 +14,10 @@ public class Restaurant {
         Waiter waiter = new Waiter(cook);
 
         waiter.placeOrder(12, new String[] {"razor blade pizza"});
+
+        for (String menu : waiter.menu.keySet()) {
+            int tableNo = Math.toIntExact(Math.round(Math.random()*10));
+            waiter.placeOrder(tableNo, new String[] {menu});
+        }
     }
 }
