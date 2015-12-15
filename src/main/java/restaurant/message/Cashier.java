@@ -22,12 +22,16 @@ public class Cashier implements MessageHandler{
 
     @Override
     public void handle(OrderMessage message) {
-        System.out.println(getClass().getSimpleName() + " handle");
-        message.getOrder().setPaid(true);
-        message.getOrder().setPaymentMethod("card");
-        paidOrders.add(message.getOrder());
+        if (message instanceof OrderPricedMessage) {
 
-        bus.publish(new OrderPaidMessage(message.getOrder()));
+            System.out.println(getClass().getSimpleName() + " handle");
+            message.getOrder().setPaid(true);
+            message.getOrder().setPaymentMethod("card");
+            paidOrders.add(message.getOrder());
 
+            bus.publish(new OrderPaidMessage(message.getOrder()));
+        } else {
+            throw new TypeException("Wrong type of order for Cashier: " + message.getClass());
+        }
     }
 }

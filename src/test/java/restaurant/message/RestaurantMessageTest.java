@@ -1,35 +1,26 @@
 package restaurant.message;
 
 import com.google.common.collect.ImmutableList;
+import jdk.nashorn.internal.runtime.ECMAException;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class RestaurantMessageTest {
 
-
     @Before
     public void setUp() throws Exception {
-//        printingHandler = new PrintingHandler();
-//        cashier = new Cashier(printingHandler);
-//        asstManager = new AsstManager(cashier);
-//        cook = new Cook(asstManager, "name");
-//        waiter = new Waiter(cook);
     }
-
 
     @Test
     public void testMoreFairDispatcherWithOrderDropperAndBus() throws  Exception{
         // given
-
         PrintingHandler printingHandler = new PrintingHandler();
-//        cashier = new Cashier(orderCaptureHandler);
-//        asstManager = new AsstManager(cashier);
-//        cook = new Cook(asstManager, "name");
-//        waiter = new Waiter(cook);
 
         MessageBasedPubSub bus = new MessageBasedPubSub();
 
@@ -71,10 +62,18 @@ public class RestaurantMessageTest {
         // then
         waitForStuffToFinish(cookHandlers, kitchen, maxOrders);
         System.out.println("Processed " + cashier.getPaidOrders().size() + " orders");
-
-//        assertEquals(maxOrders, cashier.getPaidOrders().size());
     }
 
+    @Test
+    public void testCookAcceptsOnlyOrderPlacedMessages() {
+        Cook cook = new Cook("cook1", null);
+        try {
+            cook.handle(new OrderCookedMessage(null));
+            fail("Cook shouldn't accept OrderCookedMessage");
+        } catch (TypeException t) {
+            assertEquals(1,1);
+        }
+    }
 
     private void addRandomOrders(Waiter waiter, int number) {
         String[] dishes = new String[]{"razor blade pizza", "pizza", "coke", "cake"};
@@ -85,8 +84,6 @@ public class RestaurantMessageTest {
         }
 
     }
-
-
 
     private void waitForStuffToFinish(ImmutableList<ThreadedMessageHandler> messageHandlers, ThreadedMessageHandler cookDispatcher, int maxOrders) throws InterruptedException {
         int counts = 1;

@@ -1,7 +1,6 @@
 package restaurant.message;
 
 import com.google.common.collect.ImmutableMap;
-import restaurant.HandleOrder;
 import restaurant.MenuItem;
 import restaurant.Order;
 
@@ -10,7 +9,6 @@ import java.util.List;
 
 public class Waiter {
     private MessageBasedPubSub bus;
-    private HandleOrder handler;
     ImmutableMap<String, MenuItem> menu = ImmutableMap.<String, MenuItem>builder()
             .put("pizza", new MenuItem("pizza", 10.0))
             .put("cake", new MenuItem("cake", 9.0))
@@ -30,7 +28,6 @@ public class Waiter {
 
             MenuItem orderItem = menu.get(item);
             if (orderItem != null) {
-                // Add to order
                 orderItem.setQty(1);
                 items.add(orderItem);
             }

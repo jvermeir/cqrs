@@ -35,26 +35,29 @@ public class Cook implements MessageHandler {
 
     @Override
     public void handle(OrderMessage message) {
-        System.out.println(getClass().getSimpleName() + " handle, cook: " + name);
-        try {
-            Thread.sleep(sleepTime);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Help");
-        }
-        message.getOrder().setCookTime(sleepTime);
-        // Add ingredients
-        Set<String> ingredients = new HashSet<>();
-        for (Object item : message.getOrder().getLineItems()) {
-            Recipe recipe = cookBook.get(((MenuItem) item).getName());
-            if (recipe != null) {
-                Collections.addAll(ingredients, recipe.getIngredients());
+        if (message instanceof OrderPlacedMessage) {
+            System.out.println(getClass().getSimpleName() + " handle, cook: " + name);
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Help");
             }
-            else {
-                throw new RuntimeException("Don't know how to cook " + ((MenuItem) item).getName());
+            message.getOrder().setCookTime(sleepTime);
+            // Add ingredients
+            Set<String> ingredients = new HashSet<>();
+            for (Object item : message.getOrder().getLineItems()) {
+                Recipe recipe = cookBook.get(((MenuItem) item).getName());
+                if (recipe != null) {
+                    Collections.addAll(ingredients, recipe.getIngredients());
+                } else {
+                    throw new RuntimeException("Don't know how to cook " + ((MenuItem) item).getName());
+                }
             }
+            message.getOrder().setIngredients(ingredients);
+            bus.publish(new OrderCookedMessage(message.getOrder()));
+        } else {
+            throw new TypeException("Wrong type of order for Cook: " + message.getClass());
         }
-        message.getOrder().setIngredients(ingredients);
-        bus.publish(new OrderCookedMessage(message.getOrder()));
     }
 
 }

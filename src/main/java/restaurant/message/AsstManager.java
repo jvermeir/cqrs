@@ -17,10 +17,15 @@ public class AsstManager implements MessageHandler {
 
     @Override
     public void handle(OrderMessage message) {
-        System.out.println(getClass().getSimpleName() + " handle");
-        message.getOrder().addSubTotal(9.99);
-        message.getOrder().addTotal(11.98);
-        message.getOrder().addTax(1.99);
-        bus.publish(new OrderPricedMessage(message.getOrder()));
+        if (message instanceof OrderCookedMessage) {
+            System.out.println(getClass().getSimpleName() + " handle");
+            message.getOrder().addSubTotal(9.99);
+            message.getOrder().addTotal(11.98);
+            message.getOrder().addTax(1.99);
+            bus.publish(new OrderPricedMessage(message.getOrder()));
+        } else {
+            throw new TypeException("Wrong type of order for AsstManager: " + message.getClass());
+        }
+
     }
 }
