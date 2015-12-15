@@ -2,14 +2,10 @@ package restaurant;
 
 public class Cashier implements HandleOrder{
     private final HandleOrder handler;
-    // Database of recipes
-
 
     public Cashier(HandleOrder handler) {
         this.handler = handler;
-
     }
-
 
     @Override
     public void handle(Order order) {
