@@ -106,7 +106,7 @@ public class RestaurantTest {
                 Startable startable = (Startable) handleOrder;
                 System.out.println(startable.getName() + ": " + startable.getQueueCount());
             }
-            Thread.sleep(100);
+            Thread.sleep(500);
         }
     }
 

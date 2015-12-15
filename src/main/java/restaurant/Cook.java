@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class Cook implements HandleOrder{
@@ -21,6 +22,7 @@ public class Cook implements HandleOrder{
         this.name = name;
     }
 
+    private int sleepTime;
     public String getName() {
         return name;
     }
@@ -28,6 +30,7 @@ public class Cook implements HandleOrder{
     public Cook (HandleOrder handler, String name) {
         this.handler = handler;
         this.name = name;
+        this.sleepTime = Math.toIntExact(Math.round(500 * Math.random()));
     }
 
 
@@ -35,11 +38,11 @@ public class Cook implements HandleOrder{
     public void handle(Order order) {
         System.out.println(getClass().getSimpleName() + " handle, cook: " + name);
         try {
-            Thread.sleep(1000);
+            Thread.sleep(sleepTime);
         } catch (InterruptedException e) {
             throw new RuntimeException("Help");
         }
-        order.setCookTime (300);
+        order.setCookTime (sleepTime);
         // Add ingredients
         Set<String> ingredients = new HashSet<>();
         for (Object item : order.getLineItems()) {
