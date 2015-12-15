@@ -35,7 +35,7 @@ public class Cook implements MessageHandler {
 
     @Override
     public void handle(OrderMessage message) {
-        if (message instanceof OrderPlacedMessage) {
+        if (message instanceof CookOrderMessage) {
             System.out.println(getClass().getSimpleName() + " handle, cook: " + name);
             try {
                 Thread.sleep(sleepTime);
@@ -56,7 +56,7 @@ public class Cook implements MessageHandler {
             message.getOrder().setIngredients(ingredients);
             bus.publish(new OrderCookedMessage(message.getOrder()));
         } else {
-            throw new TypeException("Wrong type of order for Cook: " + message.getClass());
+            System.out.println("Wrong type of order for Cook: " + message.getClass());
         }
     }
 

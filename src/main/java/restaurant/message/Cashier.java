@@ -22,7 +22,7 @@ public class Cashier implements MessageHandler{
 
     @Override
     public void handle(OrderMessage message) {
-        if (message instanceof OrderPricedMessage) {
+        if (message instanceof PayOrderMessage) {
 
             System.out.println(getClass().getSimpleName() + " handle");
             message.getOrder().setPaid(true);
@@ -31,7 +31,7 @@ public class Cashier implements MessageHandler{
 
             bus.publish(new OrderPaidMessage(message.getOrder()));
         } else {
-            throw new TypeException("Wrong type of order for Cashier: " + message.getClass());
+            System.out.println("Wrong type of order for Cashier: " + message.getClass());
         }
     }
 }

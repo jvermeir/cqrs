@@ -62,17 +62,7 @@ public class RestaurantMessageTest {
         // then
         waitForStuffToFinish(cookHandlers, kitchen, maxOrders);
         System.out.println("Processed " + cashier.getPaidOrders().size() + " orders");
-    }
-
-    @Test
-    public void testCookAcceptsOnlyOrderPlacedMessages() {
-        Cook cook = new Cook("cook1", null);
-        try {
-            cook.handle(new OrderCookedMessage(null));
-            fail("Cook shouldn't accept OrderCookedMessage");
-        } catch (TypeException t) {
-            assertEquals(1,1);
-        }
+        assertEquals(100, cashier.getPaidOrders().size());
     }
 
     private void addRandomOrders(Waiter waiter, int number) {
