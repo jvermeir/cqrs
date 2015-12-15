@@ -16,7 +16,7 @@ public class TTLHandler implements HandleOrder {
 
     @Override
     public void handle(Order order) {
-        if (System.currentTimeMillis() > order.getTimestamp() + 1000) {
+        if (System.currentTimeMillis() > order.getTimestamp() + 2000) {
             System.out.println("Dropping order " + order);
         }
         else {
