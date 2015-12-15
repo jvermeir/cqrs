@@ -7,19 +7,31 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Created by jan on 15/12/15.
  */
 public class ThreadedHandler implements Startable, HandleOrder {
+    public int getQueueCount() {
+        return orderQueue.size();
+    }
+
+    private String name;
+    public String getName() {
+        return name;
+    }
+
     private HandleOrder handleOrder;
-    public ThreadedHandler(HandleOrder handleOrder) {
+
+    public ThreadedHandler(HandleOrder handleOrder, String name) {
         this.handleOrder = handleOrder;
+        this.name = name;
     }
 
     Thread myThread;
+
     public void start() {
         System.out.println("Starting");
         myThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
-                    if (orderQueue.peek()!=null) {
+                    if (orderQueue.peek() != null) {
                         Order order = orderQueue.remove();
                         System.out.println("got an order " + order);
                         handleOrder.handle(order);
@@ -29,14 +41,16 @@ public class ThreadedHandler implements Startable, HandleOrder {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                    };
+                    }
+                    ;
                 }
             }
         }
-        ) ;
+        );
         myThread.start();
     }
-    public  void stop() {
+
+    public void stop() {
         myThread.interrupt();
         try {
             myThread.join();

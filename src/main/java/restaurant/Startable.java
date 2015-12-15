@@ -6,4 +6,7 @@ package restaurant;
 public interface Startable {
     public void start();
     public void stop();
+    public int getQueueCount();
+    public String getName();
 }
+
