@@ -5,8 +5,12 @@ package restaurant;
  * Date: 14/12/2015
  */
 public class AsstManager implements HandleOrder {
-    private final HandleOrder handler;
+    private HandleOrder handler;
+    private TopicBasedPubSub bus;
 
+    public AsstManager(TopicBasedPubSub bus) {
+        this.bus = bus;
+    }
     public AsstManager(HandleOrder handler) {
         this.handler = handler;
     }
@@ -18,7 +22,12 @@ public class AsstManager implements HandleOrder {
         order.addSubTotal(9.99);
         order.addTotal(11.98);
         order.addTax(1.99);
-        handler.handle(order);
+        if (bus == null) {
+            handler.handle(order);
+        }
+        else {
+            bus.publish("orderPayable", order);
+        }
 
     }
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Waiter {
+    private TopicBasedPubSub bus;
     private HandleOrder handler;
     ImmutableMap<String, MenuItem> menu = ImmutableMap.<String, MenuItem>builder()
             .put("pizza", new MenuItem("pizza", 10.0))
@@ -16,6 +17,11 @@ public class Waiter {
 
     public Waiter(HandleOrder handler) {
         this.handler = handler;
+    }
+
+
+    public Waiter(TopicBasedPubSub bus) {
+        this.bus = bus;
     }
 
     public void placeOrder(int tableNumber, String[] itemDescriptions) {
@@ -36,7 +42,12 @@ public class Waiter {
             }
             order.setItems(items);
         }
-        handler.handle(order);
+        if (bus == null) {
+            handler.handle(order);
+        }
+        else {
+            bus.publish("orderReceived", order);
+        }
 
     }
 

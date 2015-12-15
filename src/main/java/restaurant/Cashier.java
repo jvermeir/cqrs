@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Cashier implements HandleOrder{
-    private final HandleOrder handler;
+    private HandleOrder handler;
+    private TopicBasedPubSub bus;
 
+    public Cashier(TopicBasedPubSub bus) {
+        this.bus = bus;
+    }
     public Cashier(HandleOrder handler) {
         this.handler = handler;
     }
@@ -21,7 +25,12 @@ public class Cashier implements HandleOrder{
         System.out.println(getClass().getSimpleName() + " handle");
         order.setPaid(true);
         order.setPaymentMethod("card");
-        handler.handle(order);
         paidOrders.add(order);
+        if (bus == null) {
+            handler.handle(order);
+        }
+        else {
+            bus.publish("orderPaid", order);
+        }
     }
 }

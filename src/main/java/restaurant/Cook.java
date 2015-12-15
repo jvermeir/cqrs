@@ -4,11 +4,10 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 public class Cook implements HandleOrder{
-    private final HandleOrder handler;
+    private HandleOrder handler;
     // Database of recipes
     ImmutableMap<String, Recipe> cookBook = ImmutableMap.<String, Recipe>builder()
             .put("pizza", new Recipe("pizza", new String[] {"flour", "salt", "yeast", "water", "tomato sauce"}))
@@ -17,6 +16,7 @@ public class Cook implements HandleOrder{
             .put("razor blade pizza", new Recipe("razor blade pizza", new String[] {"foo", "bar", "baz"}))
             .build();
     private String name;
+    private TopicBasedPubSub bus = null;
 
     public void setName(String name) {
         this.name = name;
@@ -31,6 +31,12 @@ public class Cook implements HandleOrder{
         this.handler = handler;
         this.name = name;
         this.sleepTime = Math.toIntExact(Math.round(500 * Math.random()));
+    }
+
+    public Cook (String name, TopicBasedPubSub bus) {
+        this.name = name;
+        this.sleepTime = Math.toIntExact(Math.round(500 * Math.random()));
+        this.bus = bus;
     }
 
 
@@ -55,6 +61,11 @@ public class Cook implements HandleOrder{
             }
         }
         order.setIngredients(ingredients);
-        handler.handle(order);
+        if (bus == null) {
+            handler.handle(order);
+        }
+        else {
+            bus.publish("orderCooked", order);
+        }
     }
 }

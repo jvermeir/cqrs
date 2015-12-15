@@ -207,6 +207,55 @@ public class RestaurantTest {
     }
 
 
+    @Test
+    public void testMoreFairDispatcherWithOrderDropperAndBus() throws  Exception{
+        // given
+
+//        printingHandler = new PrintingHandler();
+//        cashier = new Cashier(orderCaptureHandler);
+//        asstManager = new AsstManager(cashier);
+//        cook = new Cook(asstManager, "name");
+//        waiter = new Waiter(cook);
+
+        TopicBasedPubSub bus = new TopicBasedPubSub();
+
+        bus.subscribe("orderPaid", printingHandler);
+        cashier = new Cashier(bus);
+        ThreadedHandler cashierHandler = new ThreadedHandler(cashier, "cashier1");
+        bus.subscribe("orderPayable", cashierHandler);
+        ThreadedHandler asstManagerHandler = new ThreadedHandler(new AsstManager(bus), "assistant manager");
+        bus.subscribe("orderCooked", asstManagerHandler);
+
+        ImmutableList<ThreadedHandler> cookHandlers = ImmutableList.<ThreadedHandler>builder()
+                .add(new ThreadedHandler(new TTLHandler(new Cook("cook1", bus)), "cook1queue"))
+                .add(new ThreadedHandler(new TTLHandler(new Cook("cook2", bus)), "cook2queue"))
+                .add(new ThreadedHandler(new TTLHandler(new Cook("cook3", bus)), "cook3queue"))
+                .build();
+
+        List<Startable> startables = new ArrayList<>();
+        startables.addAll(cookHandlers);
+        startables.add(cashierHandler);
+        startables.add(asstManagerHandler);
+
+        MoreFairDispatcher moreFairDispatcher = new MoreFairDispatcher(cookHandlers);
+        for (Startable startable:startables) {
+            startable.start();
+        }
+        ThreadedHandler kitchen = new ThreadedHandler(moreFairDispatcher, "Fair cook dispatcher");
+        bus.subscribe("orderReceived", kitchen);
+        Waiter waiter = new Waiter(bus);
+        kitchen.start();
+        // when
+
+        int maxOrders = 100;
+        addRandomOrders(waiter, maxOrders);
+
+        // then
+        waitForStuffToFinish(cookHandlers, kitchen, maxOrders);
+        System.out.println("Processed " + cashier.getPaidOrders().size() + " orders");
+
+//        assertEquals(maxOrders, cashier.getPaidOrders().size());
+    }
 
 
 
