@@ -116,6 +116,38 @@ public class RestaurantTest {
         }
     }
 
+    @Test
+    public void testMoreFairDispatcher() throws  Exception{
+        // given
+        ImmutableList<ThreadedHandler> handleOrders = ImmutableList.<ThreadedHandler>builder()
+                .add(new ThreadedHandler(new Cook(asstManager, "cook1"),"cook1queue"))
+                .add(new ThreadedHandler(new Cook(asstManager, "cook2"),"cook2queue"))
+                .add(new ThreadedHandler(new Cook(asstManager, "cook3"),"cook3queue"))
+                .build();
+        MoreFairDispatcher moreFairDispatcher = new MoreFairDispatcher(handleOrders);
+        for(HandleOrder handleOrder: handleOrders) {
+            Startable startable = (Startable) handleOrder;
+            startable.start();
+        }
+        ThreadedHandler dispatcher = new ThreadedHandler(moreFairDispatcher, "Waiting dispatch");
+        Waiter waiter = new Waiter(dispatcher);
+        dispatcher.start();
+        // when
+
+        int maxOrders = 100;
+        addRandomOrders(waiter, maxOrders);
+
+        // then
+        while (cashier.getPaidOrders().size()!=maxOrders) {
+            for(HandleOrder handleOrder: handleOrders) {
+                Startable startable = (Startable) handleOrder;
+                System.out.println(startable.getName() + ": " + startable.getQueueCount());
+            }
+            System.out.println(dispatcher.getName() + ": " + dispatcher.getQueueCount());
+            Thread.sleep(500);
+        }
+    }
+
     public static class OrderCaptureHandler implements HandleOrder{
         private final HandleOrder handler;
         private Order savedOrder;
