@@ -77,6 +77,16 @@ public class RestaurantTest {
         assertEquals(4, cashier.getPaidOrders().size());
     }
 
+    private void addRandomOrders(Waiter waiter, int number) {
+        String[] dishes = new String[]{"razor blade pizza", "pizza", "coke", "cake"};
+
+        for (int i=0;i<number ; i++) {
+            int tableNo = Math.toIntExact(Math.round(Math.random() * 10));
+            waiter.placeOrder(tableNo, new String[] {dishes[i % 4]});
+        }
+
+    }
+
     @Test
     public void testThreadedRoundRobinDispatcher() throws  Exception{
         // given
@@ -93,13 +103,9 @@ public class RestaurantTest {
         Waiter waiter = new Waiter(roundRobinDispatcher);
         // when
 
-        String[] dishes = new String[]{"razor blade pizza", "pizza", "coke", "cake"};
-
         int maxOrders = 100;
-        for (int i=0;i<maxOrders ; i++) {
-            int tableNo = Math.toIntExact(Math.round(Math.random() * 10));
-            waiter.placeOrder(tableNo, new String[] {dishes[i % 4]});
-        }
+        addRandomOrders(waiter, maxOrders);
+
         // then
         while (cashier.getPaidOrders().size()!=maxOrders) {
             for(HandleOrder handleOrder: handleOrders) {
