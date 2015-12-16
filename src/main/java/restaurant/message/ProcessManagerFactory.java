@@ -17,13 +17,23 @@ public class ProcessManagerFactory implements MessageHandler {
         bus.subscribe(OrderPaidMessage.class, this);
     }
 
+    public Map<UUID, ProcessManager> getProcessManagers() {
+        return processManagers;
+    }
+
     @Override
     public void handle(OrderMessage message) {
         if (message instanceof OrderPlacedMessage) {
-            ProcessManager processManager = new ProcessManager(bus);
+            ProcessManager processManager;
+            if (message.getOrder().getDodgy())   {
+                processManager = new StandardProcessManager(bus);
+            }
+            else {
+                processManager = new PrePayProcessManager(bus);
+            }
             processManagers.put(message.getCorrelationId(), processManager);
-            bus.subscribe(message.getCorrelationId(), processManager);
-        } else if (message instanceof OrderPaidMessage) {
+            bus.subscribe(message.getCorrelationId(), (MessageHandler) processManager);
+        } else if (message instanceof OrderCompleteMessage) {
             processManagers.remove(message.getCorrelationId());
         }
     }

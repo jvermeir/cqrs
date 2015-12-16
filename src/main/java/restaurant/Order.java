@@ -65,6 +65,14 @@ public class Order {
         set("tax", tax);
     }
 
+    public void setDodgy(boolean dodgy) {
+        set("dodgy", dodgy);
+    }
+
+    public boolean getDodgy() {
+        return this.get("dodgy") != null;
+    }
+
     public void setPaid(boolean paid) {
         set("paid", paid);
     }

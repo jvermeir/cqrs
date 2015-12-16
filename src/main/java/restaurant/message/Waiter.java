@@ -9,6 +9,7 @@ import java.util.List;
 
 public class Waiter {
     private MessageBus bus;
+    private static boolean isDodgy = false;
     ImmutableMap<String, MenuItem> menu = ImmutableMap.<String, MenuItem>builder()
             .put("pizza", new MenuItem("pizza", 10.0))
             .put("cake", new MenuItem("cake", 9.0))
@@ -37,11 +38,12 @@ public class Waiter {
             }
             order.setItems(items);
         }
-        OrderTracker orderTracker = new OrderTracker();
-        OrderPlacedMessage message = new OrderPlacedMessage(order, null);
-        bus.subscribe(message.getCorrelationId(), orderTracker);
-        bus.publish(message);
-
+//        OrderTracker orderTracker = new OrderTracker();
+//        OrderPlacedMessage message = new OrderPlacedMessage(order, null);
+//        bus.subscribe(message.getCorrelationId(), orderTracker);
+//        bus.publish(message);
+        order.set("dodgy", isDodgy);
+        isDodgy = !isDodgy;
     }
 
 }
