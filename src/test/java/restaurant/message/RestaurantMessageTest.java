@@ -58,7 +58,7 @@ public class RestaurantMessageTest {
 
         // when
 
-        int maxOrders = 1;
+        int maxOrders = 4;
         addRandomOrders(waiter, maxOrders);
 
         // then
