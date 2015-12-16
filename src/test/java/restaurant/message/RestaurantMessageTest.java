@@ -33,9 +33,9 @@ public class RestaurantMessageTest {
         bus.subscribe(PriceOrderMessage.class, asstManagerHandler);
 
         ImmutableList<ThreadedMessageHandler> cookHandlers = ImmutableList.<ThreadedMessageHandler>builder()
-                .add(new ThreadedMessageHandler(new Cook("cook1", bus), "cook1queue"))
-                .add(new ThreadedMessageHandler(new Cook("cook2", bus), "cook2queue"))
-                .add(new ThreadedMessageHandler(new Cook("cook3", bus), "cook3queue"))
+                .add(new ThreadedMessageHandler(new TTLHandler(new Cook("cook1", bus)), "cook1queue"))
+                .add(new ThreadedMessageHandler(new TTLHandler(new Cook("cook2", bus)), "cook2queue"))
+                .add(new ThreadedMessageHandler(new TTLHandler(new Cook("cook3", bus)), "cook3queue"))
                 .build();
 
         List<Startable> startables = new ArrayList<>();
@@ -58,7 +58,7 @@ public class RestaurantMessageTest {
 
         // when
 
-        int maxOrders = 4;
+        int maxOrders = 100;
         addRandomOrders(waiter, maxOrders);
 
         // then
@@ -79,8 +79,9 @@ public class RestaurantMessageTest {
         boolean stop = false;
         while (!stop) {
             Thread.sleep(500);
-            System.out.println ("Number of messages processed: " + cashier.getPaidOrders().size());
-            if (cashier.getPaidOrders().size() == maxOrders) {
+            int orderCount = cashier.getPaidOrders().size() + TTLHandler.getLateOrders().size();
+            System.out.println ("Number of messages processed: " + orderCount);
+            if ( orderCount == maxOrders) {
                 stop = true;
             }
         }
