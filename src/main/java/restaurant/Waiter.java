@@ -19,7 +19,6 @@ public class Waiter {
         this.handler = handler;
     }
 
-
     public Waiter(TopicBasedPubSub bus) {
         this.bus = bus;
     }
@@ -48,6 +47,7 @@ public class Waiter {
         else {
             bus.publish("orderReceived", order);
         }
+
 
     }
 

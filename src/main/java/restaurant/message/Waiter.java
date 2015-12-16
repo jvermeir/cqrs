@@ -37,7 +37,10 @@ public class Waiter {
             }
             order.setItems(items);
         }
-        bus.publish(new OrderPlacedMessage(order, null));
+        OrderTracker orderTracker = new OrderTracker();
+        OrderPlacedMessage message = new OrderPlacedMessage(order, null);
+        bus.subscribe(message.getCorrelationId(), orderTracker);
+        bus.publish(message);
 
     }
 
