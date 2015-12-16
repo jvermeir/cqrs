@@ -54,7 +54,7 @@ public class Cook implements MessageHandler {
                 }
             }
             message.getOrder().setIngredients(ingredients);
-            bus.publish(new OrderCookedMessage(message.getOrder()));
+            bus.publish(new OrderCookedMessage(message.getOrder(), message));
         } else {
             System.out.println("Wrong type of order for Cook: " + message.getClass());
         }

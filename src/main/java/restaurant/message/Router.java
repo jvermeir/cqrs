@@ -18,11 +18,11 @@ public class Router implements MessageHandler {
     public void handle(OrderMessage message) {
         System.out.println("Router, message: " + message.getClass().getSimpleName());
         if (message instanceof OrderPlacedMessage) {
-            bus.publish(new CookOrderMessage(message.getOrder()));
+            bus.publish(new CookOrderMessage(message.getOrder(), message));
         } else if (message instanceof OrderCookedMessage) {
-            bus.publish(new PriceOrderMessage(message.getOrder()));
+            bus.publish(new PriceOrderMessage(message.getOrder(), message));
         } else if (message instanceof OrderPricedMessage) {
-            bus.publish(new PayOrderMessage(message.getOrder()));
+            bus.publish(new PayOrderMessage(message.getOrder(), message));
         }
     }
 

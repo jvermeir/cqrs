@@ -8,8 +8,8 @@ import restaurant.Order;
  */
 public class OrderPlacedMessage extends OrderMessage {
     private final long timestamp;
-    public OrderPlacedMessage(Order order) {
-        super(order);
+    public OrderPlacedMessage(Order order, Message cause) {
+        super(order, cause);
         this.timestamp = System.currentTimeMillis();
     }
 }

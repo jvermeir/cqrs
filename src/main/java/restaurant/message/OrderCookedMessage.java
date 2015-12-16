@@ -7,7 +7,7 @@ import restaurant.Order;
  * Date: 15/12/2015
  */
 public class OrderCookedMessage extends OrderMessage {
-    public OrderCookedMessage(Order order) {
-        super(order);
+    public OrderCookedMessage(Order order, Message cause) {
+        super(order, cause);
     }
 }

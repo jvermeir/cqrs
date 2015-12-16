@@ -22,7 +22,7 @@ public class AsstManager implements MessageHandler {
             message.getOrder().addSubTotal(9.99);
             message.getOrder().addTotal(11.98);
             message.getOrder().addTax(1.99);
-            bus.publish(new OrderPricedMessage(message.getOrder()));
+            bus.publish(new OrderPricedMessage(message.getOrder(), message));
         } else {
             System.out.println("Wrong type of order for AsstManager: " + message.getClass());
         }

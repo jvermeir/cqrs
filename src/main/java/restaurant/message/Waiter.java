@@ -37,7 +37,7 @@ public class Waiter {
             }
             order.setItems(items);
         }
-        bus.publish(new OrderPlacedMessage(order));
+        bus.publish(new OrderPlacedMessage(order, null));
 
     }
 

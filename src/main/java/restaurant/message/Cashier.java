@@ -29,7 +29,7 @@ public class Cashier implements MessageHandler{
             message.getOrder().setPaymentMethod("card");
             paidOrders.add(message.getOrder());
 
-            bus.publish(new OrderPaidMessage(message.getOrder()));
+            bus.publish(new OrderPaidMessage(message.getOrder(), message));
         } else {
             System.out.println("Wrong type of order for Cashier: " + message.getClass());
         }
