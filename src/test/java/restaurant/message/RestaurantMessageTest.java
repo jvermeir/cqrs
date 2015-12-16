@@ -28,9 +28,9 @@ public class RestaurantMessageTest {
 
         Cashier cashier = new Cashier(bus);
         ThreadedMessageHandler cashierHandler = new ThreadedMessageHandler(cashier, "cashier1");
-        bus.subscribe(OrderPricedMessage.class, cashierHandler);
+        bus.subscribe(PayOrderMessage.class, cashierHandler);
         ThreadedMessageHandler asstManagerHandler = new ThreadedMessageHandler(new AsstManager(bus), "assistant manager");
-        bus.subscribe(OrderCookedMessage.class, asstManagerHandler);
+        bus.subscribe(PriceOrderMessage.class, asstManagerHandler);
 
         ImmutableList<ThreadedMessageHandler> cookHandlers = ImmutableList.<ThreadedMessageHandler>builder()
                 .add(new ThreadedMessageHandler(new Cook("cook1", bus), "cook1queue"))
@@ -51,18 +51,18 @@ public class RestaurantMessageTest {
         }
         ThreadedMessageHandler kitchen = new ThreadedMessageHandler(moreFairDispatcher, "Fair cook dispatcher");
 
-        bus.subscribe(OrderPlacedMessage.class, kitchen);
+        bus.subscribe(CookOrderMessage.class, kitchen);
         Waiter waiter = new Waiter(bus);
         kitchen.start();
+        Router router = new Router(bus);
+
         // when
 
         int maxOrders = 100;
         addRandomOrders(waiter, maxOrders);
 
         // then
-        waitForStuffToFinish(cookHandlers, kitchen, maxOrders);
-        System.out.println("Processed " + cashier.getPaidOrders().size() + " orders");
-        assertEquals(100, cashier.getPaidOrders().size());
+        waitForStuffToFinish(cashier, maxOrders);
     }
 
     private void addRandomOrders(Waiter waiter, int number) {
@@ -75,18 +75,14 @@ public class RestaurantMessageTest {
 
     }
 
-    private void waitForStuffToFinish(ImmutableList<ThreadedMessageHandler> messageHandlers, ThreadedMessageHandler cookDispatcher, int maxOrders) throws InterruptedException {
-        int counts = 1;
-        while (counts > 0) {
+    private void waitForStuffToFinish(Cashier cashier, int maxOrders) throws InterruptedException {
+        boolean stop = false;
+        while (!stop) {
             Thread.sleep(500);
-            counts = 0;
-            for(MessageHandler messageHandler: messageHandlers) {
-                Startable startable = (Startable) messageHandler;
-                System.out.println(startable.getName() + ": " + startable.getQueueCount());
-                counts += startable.getQueueCount();
+            System.out.println ("Number of messages processed: " + cashier.getPaidOrders().size());
+            if (cashier.getPaidOrders().size() == maxOrders) {
+                stop = true;
             }
-            System.out.println(cookDispatcher.getName() + ": " + cookDispatcher.getQueueCount());
-            counts += cookDispatcher.getQueueCount();
         }
     }
 
