@@ -13,13 +13,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * User: mickdudley
  * Date: 15/12/2015
  */
-public class MessageBasedPubSub {
+public class MessageBasedPubSub implements MessageBus {
     Map<String, List<MessageHandler>> subscribers = new ConcurrentHashMap<>();
 
+    @Override
     public <T> void subscribe(Class klass, MessageHandler handler) {
         String keyName = klass.getCanonicalName();
         subscribe(keyName, handler);
     }
+    @Override
     public <T> void subscribe(UUID uuid, MessageHandler handler) {
         String keyName = uuid.toString();
         subscribe(keyName, handler);
@@ -34,6 +36,7 @@ public class MessageBasedPubSub {
         subscribers.put(key, handlers);
     }
 
+    @Override
     public void publish(OrderMessage message) {
         publish(message, message.getClass().getCanonicalName());
         publish(message, message.getCorrelationId().toString());

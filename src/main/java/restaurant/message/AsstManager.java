@@ -1,17 +1,13 @@
 package restaurant.message;
 
-import restaurant.HandleOrder;
-import restaurant.Order;
-import restaurant.TopicBasedPubSub;
-
 /**
  * User: mickdudley
  * Date: 14/12/2015
  */
 public class AsstManager implements MessageHandler {
-    private MessageBasedPubSub bus;
+    private MessageBus bus;
 
-    public AsstManager(MessageBasedPubSub bus) {
+    public AsstManager(MessageBus bus) {
         this.bus = bus;
     }
 

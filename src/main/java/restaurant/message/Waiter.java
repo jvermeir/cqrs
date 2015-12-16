@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Waiter {
-    private MessageBasedPubSub bus;
+    private MessageBus bus;
     ImmutableMap<String, MenuItem> menu = ImmutableMap.<String, MenuItem>builder()
             .put("pizza", new MenuItem("pizza", 10.0))
             .put("cake", new MenuItem("cake", 9.0))
@@ -16,7 +16,7 @@ public class Waiter {
             .put("coke", new MenuItem("coke", 2.0))
             .build();
 
-    public Waiter(MessageBasedPubSub bus) {
+    public Waiter(MessageBus bus) {
         this.bus = bus;
     }
 

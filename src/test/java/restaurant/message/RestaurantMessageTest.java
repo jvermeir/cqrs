@@ -1,7 +1,6 @@
 package restaurant.message;
 
 import com.google.common.collect.ImmutableList;
-import jdk.nashorn.internal.runtime.ECMAException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,11 +17,13 @@ public class RestaurantMessageTest {
     }
 
     @Test
-    public void testMoreFairDispatcherWithOrderDropperAndBus() throws  Exception{
+    public void testMoreFairDispatcherWithOrderDropperAndBus() throws Exception {
         // given
         PrintingHandler printingHandler = new PrintingHandler();
+        LateOrderHandler lateOrderHandler = new LateOrderHandler();
 
-        MessageBasedPubSub bus = new MessageBasedPubSub();
+        MessageBus bus = new MessageBasedPubSub();
+        bus.subscribe(OrderDroppedMessage.class, lateOrderHandler);
 
         bus.subscribe(OrderPaidMessage.class, printingHandler);
 
@@ -33,9 +34,9 @@ public class RestaurantMessageTest {
         bus.subscribe(PriceOrderMessage.class, asstManagerHandler);
 
         ImmutableList<ThreadedMessageHandler> cookHandlers = ImmutableList.<ThreadedMessageHandler>builder()
-                .add(new ThreadedMessageHandler(new TTLHandler(new Cook("cook1", bus)), "cook1queue"))
-                .add(new ThreadedMessageHandler(new TTLHandler(new Cook("cook2", bus)), "cook2queue"))
-                .add(new ThreadedMessageHandler(new TTLHandler(new Cook("cook3", bus)), "cook3queue"))
+                .add(new ThreadedMessageHandler(new TTLHandler(new Cook("cook1", bus), bus), "cook1queue"))
+                .add(new ThreadedMessageHandler(new TTLHandler(new Cook("cook2", bus), bus), "cook2queue"))
+                .add(new ThreadedMessageHandler(new TTLHandler(new Cook("cook3", bus), bus), "cook3queue"))
                 .build();
 
         List<Startable> startables = new ArrayList<>();
@@ -46,7 +47,7 @@ public class RestaurantMessageTest {
         startables.add((Startable) asstManagerHandler);
 
         MoreFairDispatcher moreFairDispatcher = new MoreFairDispatcher(cookHandlers);
-        for (Startable startable:startables) {
+        for (Startable startable : startables) {
             startable.start();
         }
         ThreadedMessageHandler kitchen = new ThreadedMessageHandler(moreFairDispatcher, "Fair cook dispatcher");
@@ -62,29 +63,23 @@ public class RestaurantMessageTest {
         addRandomOrders(waiter, maxOrders);
 
         // then
-        waitForStuffToFinish(cashier, maxOrders);
-    }
-
-    private void addRandomOrders(Waiter waiter, int number) {
-        String[] dishes = new String[]{"razor blade pizza", "pizza", "coke", "cake"};
-
-        for (int i=0;i<number ; i++) {
-            int tableNo = Math.toIntExact(Math.round(Math.random() * 10));
-            waiter.placeOrder(tableNo, new String[] {dishes[i % 4]});
-        }
-
-    }
-
-    private void waitForStuffToFinish(Cashier cashier, int maxOrders) throws InterruptedException {
         boolean stop = false;
         while (!stop) {
             Thread.sleep(500);
-            int orderCount = cashier.getPaidOrders().size() + TTLHandler.getLateOrders().size();
-            System.out.println ("Number of messages processed: " + orderCount);
-            if ( orderCount == maxOrders) {
+            int orderCount = cashier.getPaidOrders().size() + lateOrderHandler.getLateOrders().size();
+            System.out.println("Number of messages processed: " + orderCount);
+            if (orderCount == maxOrders) {
                 stop = true;
             }
         }
     }
 
+    private void addRandomOrders(Waiter waiter, int number) {
+        String[] dishes = new String[]{"razor blade pizza", "pizza", "coke", "cake"};
+
+        for (int i = 0; i < number; i++) {
+            int tableNo = Math.toIntExact(Math.round(Math.random() * 10));
+            waiter.placeOrder(tableNo, new String[]{dishes[i % 4]});
+        }
+    }
 }

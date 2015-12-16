@@ -203,7 +203,7 @@ public class RestaurantTest {
         waitForStuffToFinish(cookHandlers, cookDispatcher, maxOrders);
         System.out.println("Processed " + cashier.getPaidOrders().size() + " orders");
 
-//        assertEquals(maxOrders, cashier.getPaidOrders().size());
+//        assertEquals(maxOrders, cashier.getLateOrders().size());
     }
 
 
@@ -254,7 +254,7 @@ public class RestaurantTest {
         waitForStuffToFinish(cookHandlers, kitchen, maxOrders);
         System.out.println("Processed " + cashier.getPaidOrders().size() + " orders");
 
-//        assertEquals(maxOrders, cashier.getPaidOrders().size());
+//        assertEquals(maxOrders, cashier.getLateOrders().size());
     }
 
 

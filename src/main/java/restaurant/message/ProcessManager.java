@@ -3,20 +3,17 @@ package restaurant.message;
 /**
  * Created by jan on 16/12/15.
  */
-public class Router implements MessageHandler {
+public class ProcessManager implements MessageHandler {
 
     private MessageBus bus;
 
-    public Router(MessageBus bus) {
+    public ProcessManager(MessageBus bus) {
         this.bus = bus;
-        bus.subscribe(OrderPlacedMessage.class, this);
-        bus.subscribe(OrderCookedMessage.class, this);
-        bus.subscribe(OrderPricedMessage.class, this);
     }
 
     @Override
     public void handle(OrderMessage message) {
-        System.out.println("Router, message: " + message.getClass().getSimpleName());
+        System.out.println("ProcessManager, message: " + message.getClass().getSimpleName());
         if (message instanceof OrderPlacedMessage) {
             bus.publish(new CookOrderMessage(message.getOrder(), message));
         } else if (message instanceof OrderCookedMessage) {
@@ -25,5 +22,4 @@ public class Router implements MessageHandler {
             bus.publish(new PayOrderMessage(message.getOrder(), message));
         }
     }
-
 }

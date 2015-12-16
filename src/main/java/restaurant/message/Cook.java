@@ -16,7 +16,7 @@ public class Cook implements MessageHandler {
             .put("razor blade pizza", new Recipe("razor blade pizza", new String[] {"foo", "bar", "baz"}))
             .build();
     private String name;
-    private MessageBasedPubSub bus = null;
+    private MessageBus bus = null;
 
     public void setName(String name) {
         this.name = name;
@@ -27,7 +27,7 @@ public class Cook implements MessageHandler {
         return name;
     }
 
-    public Cook(String name, MessageBasedPubSub bus) {
+    public Cook(String name, MessageBus bus) {
         this.name = name;
         this.sleepTime = Math.toIntExact(Math.round(500 * Math.random()));
         this.bus = bus;

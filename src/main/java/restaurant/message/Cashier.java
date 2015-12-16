@@ -1,16 +1,14 @@
 package restaurant.message;
 
-import restaurant.HandleOrder;
 import restaurant.Order;
-import restaurant.TopicBasedPubSub;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Cashier implements MessageHandler{
-    private MessageBasedPubSub bus;
+    private MessageBus bus;
 
-    public Cashier(MessageBasedPubSub bus) {
+    public Cashier(MessageBus bus) {
         this.bus = bus;
     }
 
