@@ -31,7 +31,6 @@ public class StandardProcessManagerTest {
         standardProcessManager.handle(message);
         // then
         List<Message> publishedMessages = ((MockBus) bus).getPublishedMessages();
-        assertEquals(1, publishedMessages.size());
         Message message1 = publishedMessages.get(0);
         assertEquals(CookOrderMessage.class, message1.getClass());
     }
@@ -73,7 +72,9 @@ public class StandardProcessManagerTest {
         standardProcessManager.handle(message);
         // then
         List<Message> publishedMessages = ((MockBus) bus).getPublishedMessages();
-        assertEquals(0, publishedMessages.size());
+        assertEquals(1, publishedMessages.size());
+        Message message1 = publishedMessages.get(0);
+        assertEquals(OrderCompleteMessage.class, message1.getClass());
     }
 
 
