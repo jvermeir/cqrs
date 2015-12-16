@@ -19,6 +19,7 @@ public class PrePayProcessManager implements MessageHandler, ProcessManager {
         } else if (message instanceof OrderPricedMessage) {
             bus.publish(new PayOrderMessage(message.getOrder(), message));
         } else if (message instanceof OrderPaidMessage) {
+            message.getOrder().setTTL(Long.MAX_VALUE);
             bus.publish(new CookOrderMessage(message.getOrder(), message));
         } else if (message instanceof OrderCookedMessage) {
             bus.publish(new OrderCompleteMessage(message.getOrder(), message));

@@ -18,6 +18,7 @@ public class Order {
     {
         this.tableNumber = tableNumber;
         this.timestamp = System.currentTimeMillis();
+        this.setTTL(2000);
     }
 
     public long getTimestamp() {
@@ -71,6 +72,14 @@ public class Order {
 
     public boolean getDodgy() {
         return this.get("dodgy") != null;
+    }
+
+    public void setTTL(long ttl) {
+        set("ttl", ttl);
+    }
+
+    public long getTTL() {
+        return get("ttl") == null ? Long.MAX_VALUE : (long) get("ttl");
     }
 
     public void setPaid(boolean paid) {

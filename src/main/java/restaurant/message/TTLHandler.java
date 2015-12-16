@@ -27,7 +27,7 @@ public class TTLHandler implements MessageHandler {
 
     @Override
     public void handle(OrderMessage message) {
-        if (System.currentTimeMillis() > message.getOrder().getTimestamp() + 2000) {
+        if (System.currentTimeMillis() > message.getOrder().getTimestamp() + message.getOrder().getTTL()) {
             System.out.println("Dropping order " + message.getOrder());
             lateOrders.add(message.getOrder());
             bus.publish(new OrderDroppedMessage(message.getOrder(), message));

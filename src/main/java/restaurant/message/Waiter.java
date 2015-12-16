@@ -42,7 +42,8 @@ public class Waiter {
 //        OrderPlacedMessage message = new OrderPlacedMessage(order, null);
 //        bus.subscribe(message.getCorrelationId(), orderTracker);
 //        bus.publish(message);
-        order.set("dodgy", isDodgy);
+        order.setDodgy(isDodgy);
+
         isDodgy = !isDodgy;
     }
 
