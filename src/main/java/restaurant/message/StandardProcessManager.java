@@ -32,7 +32,7 @@ public class StandardProcessManager implements MessageHandler, ProcessManager {
         } else if (message instanceof CookingTimedOutMessage) {
             if (!foodCooked) {
                 CookingTimedOutMessage msg = (CookingTimedOutMessage) message;
-                if (msg.getCount() < MAX_RETRY) {
+                if (msg.getCount() <= MAX_RETRY) {
                     CookOrderMessage cookOrderMessage = new CookOrderMessage(message.getOrder(), message);
                     bus.publish(cookOrderMessage);
                     bus.publish(new DelayedSendMessage(message.getOrder(),
@@ -44,8 +44,6 @@ public class StandardProcessManager implements MessageHandler, ProcessManager {
                     bus.publish(new OrderDroppedMessage(message.getOrder(), message));
                 }
             }
-
-            bus.publish(new OrderCompleteMessage(message.getOrder(), message));
         }
     }
 }

@@ -14,7 +14,8 @@ import java.util.UUID;
 public class StandardProcessManagerTest {
 
     StandardProcessManager standardProcessManager;
-    MessageBus bus;
+    MockBus bus;
+
     @Before
     public void setup() {
         bus = new MockBus();
@@ -30,7 +31,7 @@ public class StandardProcessManagerTest {
         // when
         standardProcessManager.handle(message);
         // then
-        List<Message> publishedMessages = ((MockBus) bus).getPublishedMessages();
+        List<Message> publishedMessages = bus.getPublishedMessages();
         Message message1 = publishedMessages.get(0);
         assertEquals(CookOrderMessage.class, message1.getClass());
     }
@@ -43,7 +44,7 @@ public class StandardProcessManagerTest {
         // when
         standardProcessManager.handle(message);
         // then
-        List<Message> publishedMessages = ((MockBus) bus).getPublishedMessages();
+        List<Message> publishedMessages = bus.getPublishedMessages();
         assertEquals(1, publishedMessages.size());
         Message message1 = publishedMessages.get(0);
         assertEquals(PriceOrderMessage.class, message1.getClass());
@@ -57,11 +58,58 @@ public class StandardProcessManagerTest {
         // when
         standardProcessManager.handle(message);
         // then
-        List<Message> publishedMessages = ((MockBus) bus).getPublishedMessages();
+        List<Message> publishedMessages = bus.getPublishedMessages();
         assertEquals(1, publishedMessages.size());
         Message message1 = publishedMessages.get(0);
         assertEquals(PayOrderMessage.class, message1.getClass());
     }
+
+    @Test
+    public void testRecookOrderIfTimeout() {
+        // given
+        Order order = new Order(42);
+        OrderPlacedMessage orderPlacedMessage = new OrderPlacedMessage(order, null);
+        standardProcessManager.handle(orderPlacedMessage);
+        bus.clear();
+        // when
+        standardProcessManager.handle(new CookingTimedOutMessage(order, orderPlacedMessage, 1));
+        List<Message> publishedMessages = bus.getPublishedMessages();
+        Message message1 = publishedMessages.get(0);
+        assertEquals(CookOrderMessage.class, message1.getClass());
+    }
+
+    @Test
+    public void testDontRecookOrderIfTimeoutButOrderCooked() {
+        // given
+        Order order = new Order(42);
+        OrderPlacedMessage orderPlacedMessage = new OrderPlacedMessage(order, null);
+        standardProcessManager.handle(orderPlacedMessage);
+        OrderCookedMessage orderCookedMessage = new OrderCookedMessage(order, orderPlacedMessage);
+        standardProcessManager.handle(orderCookedMessage);
+        bus.clear();
+        // when
+        standardProcessManager.handle(new CookingTimedOutMessage(order, orderPlacedMessage, 1));
+        // then
+        List<Message> publishedMessages = bus.getPublishedMessages();
+        assertEquals(0, publishedMessages.size());
+    }
+
+    @Test
+    public void testDropOrderIfTryToReCookMoreThanThreeTimes() {
+        // given
+        Order order = new Order(42);
+        OrderPlacedMessage orderPlacedMessage = new OrderPlacedMessage(order, null);
+        standardProcessManager.handle(orderPlacedMessage);
+        bus.clear();
+        // when
+        standardProcessManager.handle(new CookingTimedOutMessage(order, orderPlacedMessage, 4));
+        // then
+        List<Message> publishedMessages = bus.getPublishedMessages();
+        assertEquals(1, publishedMessages.size());
+        Message message1 = publishedMessages.get(0);
+        assertEquals(OrderDroppedMessage.class, message1.getClass());
+    }
+
 
     @Test
     public void testOrderPaid() {
@@ -71,7 +119,7 @@ public class StandardProcessManagerTest {
         // when
         standardProcessManager.handle(message);
         // then
-        List<Message> publishedMessages = ((MockBus) bus).getPublishedMessages();
+        List<Message> publishedMessages = bus.getPublishedMessages();
         assertEquals(1, publishedMessages.size());
         Message message1 = publishedMessages.get(0);
         assertEquals(OrderCompleteMessage.class, message1.getClass());
@@ -83,6 +131,10 @@ public class StandardProcessManagerTest {
 
         public List<Message> getPublishedMessages() {
             return publishedMessages;
+        }
+
+        public void clear() {
+            publishedMessages.clear();
         }
 
         @Override
